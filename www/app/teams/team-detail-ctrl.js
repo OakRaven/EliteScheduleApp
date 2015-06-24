@@ -10,7 +10,7 @@
 		var vm = this;
 		
 		vm.teamId = Number($stateParams.id);
-		var data = eliteApi.getLeagueData();
+		window.data = eliteApi.getLeagueData();
 		
 		var team = _.chain(data.teams)
 					.pluck('divisionTeams')
@@ -29,7 +29,8 @@
 						return {
 							gameId: item.id,
 							opponent: opponentName,
-							item: item.time,
+							time: item.time,
+							location: item.location,
 							locationUrl: item.locationUrl,
 							scoreDisplay: scoreDisplay,
 							homeAway: (isTeam1 ? 'vs.' : 'at')
