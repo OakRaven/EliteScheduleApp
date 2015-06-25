@@ -1,14 +1,15 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 
-(function(){
+(function () {
 	'use strict';
-	
+
 	angular.module('eliteApp').controller('TeamsCtrl', ['eliteApi', TeamsCtrl]);
-	
-	function TeamsCtrl(eliteApi){
+
+	function TeamsCtrl(eliteApi) {
 		var vm = this;
-		
-		var data = eliteApi.getLeagueData();
-		vm.teams = data.teams;				
+
+		eliteApi.getLeagues(function (data) {
+			vm.teams = data.teams;
+		});
 	}
 })();
