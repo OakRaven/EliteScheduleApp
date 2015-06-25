@@ -3,7 +3,7 @@
 		<div class="list">
 			<div ng-repeat="division in vm.teams">
 				<div class="item item-divider item-energized">{{division.divisionName}}</div>
-				<a class="item item-icon-right" ng-repeat="team in division.divisionTeams">
+				<a href="#/app/teams/{{team.id}}" class="item item-icon-right" ng-repeat="team in division.divisionTeams">
 					{{team.name}}
 					<i class="icon ion-chevron-right icon-accessory"></i>
 				</a>
