@@ -3,65 +3,74 @@
 (function () {
 	'use strict';
 
-	angular.module('eliteApp').factory('eliteApi', ['$http', '$q', '$ionicLoading', eliteApi]);
+	angular.module('eliteApp').factory('eliteApi', ['$http', '$q', '$ionicLoading', 'CacheFactory', eliteApi]);
 
-	function eliteApi($http, $q, $ionicLoading) {
+	function eliteApi($http, $q, $ionicLoading, CacheFactory) {
 		var currentLeagueId;
 
-		function getLeagues() {
-			var deferred = $q.defer();
+		var self = this;
 
-			deferred.resolve([
-				{ id: 2029, name: "6th Grade Saturday 2014-15 League" },
-				{ id: 2024, name: "7th Grade MS JV Friday 2014-15 League" },
-				{ id: 2025, name: "7th Grade MS JV Saturday 2014-15 League" },
-				{ id: 2028, name: "7th-8th Grade HC Invitational 2014-15 League" },
-				{ id: 2035, name: "8th Grade HYBA Spring 2015" },
-				{ id: 2026, name: "8th Grade MS Varsity Friday 2014-15 League" },
-				{ id: 2027, name: "8th Grade MS Varsity Saturday 2014-15 League" },
-				{ id: 2023, name: "Ballin in the Fall " },
-				{ id: 2036, name: "Friday Spring 2015 13U HCMS" },
-				{ id: 2037, name: "Friday Spring 2015 13U LEMS" },
-				{ id: 2020, name: "HCYP 4th Grade Girls Rec 2014-2015" },
-				{ id: 2019, name: "Laker Challenge 2014" },
-				{ id: 2034, name: "March Madness 2015 Tournament" },
-				{ id: 2040, name: "Metro Classic 2015 Tournament" },
-				{ id: 2039, name: "Spring Fling 2015 Tournament" },
-				{ id: 2011, name: "Summer Showdown 2014" },
-				{ id: 3037, name: "Summer Showdown 2015 Tournament" },
-				{ id: 1005, name: '5th Grade Saturday 2013-14 League' },
-				{ id: 1004, name: '6th Grade Friday 2013-14 League' },
-				{ id: 2008, name: '7th Grade HYBA Spring 2014' },
-				{ id: 1, name: '7th Grade MS JV Friday 2013-14 League' },
-				{ id: 2, name: '7th Grade MS JV Saturday 2013-14 League' },
-				{ id: 2012, name: '8th Grade HYBA Fall 2014' },
-				{ id: 3, name: '8th Grade MS Varsity Friday 2013-14 League' },
-				{ id: 1003, name: '8th Grade MS Varsity Saturday 2013-14 League' },
-				{ id: 2007, name: 'Friday Spring 6th Grade' },
-				{ id: 2005, name: 'March Madness Tournament 2014' },
-				{ id: 2010, name: 'Metro Classic 2014' },
-				{ id: 2009, name: 'Spring Fling Tournament 2014' }
-			]);
+		self.leaguesCache = CacheFactory.get('leaguesCache');
+		self.leagueDataCache = CacheFactory.get('leagueDataCache');
+
+		function getLeagues() {
+			var deferred = $q.defer(),
+				cacheKey = 'leagues',
+				leaguesData = self.leaguesCache.get(cacheKey);
+
+			if (leaguesData) {
+				console.log('Found data inside cache', leaguesData);
+				deferred.resolve(leaguesData);
+			} else {
+				var data = [
+					{ id: 1, name: '7th Grade MS JV Friday 2013-14 League' },
+					{ id: 2, name: '7th Grade MS JV Saturday 2013-14 League' },
+					{ id: 2005, name: 'March Madness Tournament 2014' },
+					{ id: 2008, name: '7th Grade HYBA Spring 2014' },
+					{ id: 2009, name: 'Spring Fling Tournament 2014' },					
+					{ id: 2010, name: 'Metro Classic 2014' },
+					{ id: 2011, name: "Summer Showdown 2014" },
+					{ id: 2012, name: '8th Grade HYBA Fall 2014' },
+					{ id: 2019, name: "Laker Challenge 2014" },
+					{ id: 2023, name: "Ballin in the Fall " },
+					{ id: 2034, name: "March Madness 2015 Tournament" },
+					{ id: 2036, name: "Friday Spring 2015 13U HCMS" },
+					{ id: 2039, name: "Spring Fling 2015 Tournament" },
+					{ id: 2040, name: "Metro Classic 2015 Tournament" },
+					{ id: 3037, name: "Summer Showdown 2015 Tournament" }
+				];
+
+				self.leaguesCache.put(cacheKey, data);
+				deferred.resolve(data);
+			}
 
 			return deferred.promise;
 		}
 
 		function getLeagueData() {
-			var deferred = $q.defer();
+			var deferred = $q.defer(),
+				cacheKey = 'leagueData-' + currentLeagueId,
+				leagueData = self.leagueDataCache.get(cacheKey);
 
-			$ionicLoading.show({ template: 'Loading...' });
+			if (leagueData) {
+				console.log('Loaded league data from cache');
+				deferred.resolve(leagueData);
+			} else {
+				$ionicLoading.show({ template: 'Loading...' });
 
-			$http.get('http://elite-schedule.net/api/leaguedata/' + currentLeagueId)
-				.success(function (data, status) {
-				$ionicLoading.hide();
-				console.log('Received schedule data via HTTP.', data, status);
-				deferred.resolve(data);
-			})
-				.error(function () {
-				$ionicLoading.hide();
-				console.log('Error while making HTTP call.');
-				deferred.reject();
-			});
+				$http.get('http://elite-schedule.net/api/leaguedata/' + currentLeagueId)
+					.success(function (data, status) {
+					self.leagueDataCache.put(cacheKey, data);
+					$ionicLoading.hide();
+					console.log('Received schedule data via HTTP.', data, status);
+					deferred.resolve(data);
+				})
+					.error(function () {
+					$ionicLoading.hide();
+					console.log('Error while making HTTP call.');
+					deferred.reject();
+				});
+			}
 
 			return deferred.promise;
 		}
