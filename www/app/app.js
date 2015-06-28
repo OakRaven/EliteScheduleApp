@@ -3,7 +3,7 @@
 
 angular.module('eliteApp', ['ionic', 'angular-cache'])
 
-.run(function ($ionicPlatform, CacheFactory) {
+	.run(function ($ionicPlatform, CacheFactory) {
 	$ionicPlatform.ready(function () {
 		if (window.cordova && window.cordova.plugins.Keyboard) {
 			cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -12,7 +12,7 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 		if (window.StatusBar) {
 			StatusBar.styleDefault();
 		}
-		
+
 		CacheFactory('leagueDataCache', { storage: 'localStorage', maxAge: 5000, deleteOnExpire: 'aggressive' });
 		CacheFactory('leaguesCache', { storage: 'localStorage', maxAge: 5000, deleteOnExpire: 'aggressive' });
 		CacheFactory('myTeamsCache', { storage: 'localStorage' });
@@ -20,7 +20,7 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 	});
 })
 
-.config(function ($stateProvider, $urlRouterProvider, CacheFactoryProvider) {
+	.config(function ($stateProvider, $urlRouterProvider, CacheFactoryProvider) {
 
 	angular.extend(CacheFactoryProvider.defaults, { maxAge: 15 * 60 * 1000 });
 
@@ -57,6 +57,7 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 
 		.state('app.teams', {
 		url: '/teams',
+		cache: false,
 		views: {
 			'mainContent': {
 				templateUrl: 'app/teams/teams.html'
@@ -109,5 +110,5 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 		}
 	});
 
-	$urlRouterProvider.otherwise('/app/teams');
+	$urlRouterProvider.otherwise('/home/leagues');
 });
