@@ -4,9 +4,9 @@
 (function () {
 	'use strict';
 
-	angular.module('eliteApp').controller('TeamDetailCtrl', ['$stateParams', '$ionicPopup', 'eliteApi', TeamDetailCtrl]);
+	angular.module('eliteApp').controller('TeamDetailCtrl', ['$stateParams', '$ionicPopup', 'myTeamsService', 'eliteApi', TeamDetailCtrl]);
 
-	function TeamDetailCtrl($stateParams, $ionicPopup, eliteApi) {
+	function TeamDetailCtrl($stateParams, $ionicPopup, myTeamsService, eliteApi) {
 		var vm = this;
 
 		vm.teamId = Number($stateParams.id);
@@ -44,7 +44,13 @@
 				.find({ 'teamId': vm.teamId })
 				.value();
 
-			vm.following = false;
+			var followedTeam = myTeamsService.isFollowingTeam(team.id);
+			
+			if(followedTeam){
+				vm.following = true;
+			} else{
+				vm.following = false;
+			}
 
 			vm.toggleFollow = function () {
 				if (vm.following) {
@@ -60,6 +66,12 @@
 					});
 				} else {
 					vm.following = !vm.following;
+				}
+				
+				if(vm.following){
+					myTeamsService.followTeam(team);
+				} else {
+					myTeamsService.unfollowTeam(team.teamId);
 				}
 			};
 

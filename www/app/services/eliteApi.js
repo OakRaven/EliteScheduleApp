@@ -6,13 +6,37 @@
 	angular.module('eliteApp').factory('eliteApi', ['$http', '$q', '$ionicLoading', 'CacheFactory', eliteApi]);
 
 	function eliteApi($http, $q, $ionicLoading, CacheFactory) {
-		var currentLeagueId;
-
 		var self = this;
 
 		self.leaguesCache = CacheFactory.get('leaguesCache');
 		self.leagueDataCache = CacheFactory.get('leagueDataCache');
-
+		
+		self.leaguesCache.setOptions({
+			onExpire: function(key, value){
+				getLeagues()
+					.then(function(){
+						console.log('Leagues Cache was automatically refreshed.', new Date());
+					}, function(){
+						console.log('Error getting data.  Putting expired item back in the cache.', new Date());
+						self.leaguesCache.put(key, value);
+					});
+			}
+		});
+		
+		self.leagueDataCache.setOptions({
+			onExpire: function(key, value){
+				getLeagues()
+					.then(function(){
+						console.log('League Data Cache was automatically refreshed.', new Date());
+					}, function(){
+						console.log('Error getting data.  Putting expired item back in the cache.', new Date());
+						self.leagueDataCache.put(key, value);
+					});
+			}
+		});
+		
+		self.staticCache = CacheFactory.get('staticCache');
+		
 		function getLeagues() {
 			var deferred = $q.defer(),
 				cacheKey = 'leagues',
@@ -49,7 +73,7 @@
 
 		function getLeagueData() {
 			var deferred = $q.defer(),
-				cacheKey = 'leagueData-' + currentLeagueId,
+				cacheKey = 'leagueData-' + getLeagueId(),
 				leagueData = self.leagueDataCache.get(cacheKey);
 
 			if (leagueData) {
@@ -58,7 +82,7 @@
 			} else {
 				$ionicLoading.show({ template: 'Loading...' });
 
-				$http.get('http://elite-schedule.net/api/leaguedata/' + currentLeagueId)
+				$http.get('http://elite-schedule.net/api/leaguedata/' + getLeagueId())
 					.success(function (data, status) {
 					self.leagueDataCache.put(cacheKey, data);
 					$ionicLoading.hide();
@@ -76,8 +100,11 @@
 		}
 
 		function setLeagueId(leagueId) {
-			currentLeagueId = leagueId;
-			console.log('currentLeagueId', currentLeagueId);
+			self.staticCache.put('currentLeagueId', leagueId);
+		}
+		
+		function getLeagueId() {
+			return self.staticCache.get('currentLeagueId');
 		}
 
 		return {

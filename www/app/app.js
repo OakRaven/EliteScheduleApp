@@ -13,8 +13,8 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 			StatusBar.styleDefault();
 		}
 
-		CacheFactory('leagueDataCache', { storage: 'localStorage', maxAge: 5000, deleteOnExpire: 'aggressive' });
-		CacheFactory('leaguesCache', { storage: 'localStorage', maxAge: 5000, deleteOnExpire: 'aggressive' });
+		CacheFactory('leagueDataCache', { storage: 'localStorage', maxAge: 15 * 60 * 1000, deleteOnExpire: 'aggressive' });
+		CacheFactory('leaguesCache', { storage: 'localStorage', maxAge: 15 * 60 * 1000, deleteOnExpire: 'aggressive' });
 		CacheFactory('myTeamsCache', { storage: 'localStorage' });
 		CacheFactory('staticCache', { storage: 'localStorage' });
 	});
@@ -42,6 +42,7 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 
 		.state('home.myteams', {
 		url: '/myteams',
+		cahce: false,
 		views: {
 			'tab-myteams': {
 				templateUrl: 'app/home/myteams.html'
@@ -67,6 +68,7 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 
 		.state('app.team-detail', {
 		url: '/teams/:id',
+		cache: false,
 		views: {
 			'mainContent': {
 				templateUrl: 'app/teams/team-detail.html'
