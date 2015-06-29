@@ -28,6 +28,7 @@
 				var scoreDisplay = getScoreDisplay(isTeam1, item.team1Score, item.team2Score);
 				return {
 					gameId: item.id,
+					leagueId: item.leageId,
 					opponent: opponentName,
 					time: item.time,
 					location: item.location,
@@ -35,22 +36,21 @@
 					scoreDisplay: scoreDisplay,
 					homeAway: (isTeam1 ? 'vs.' : 'at')
 				};
-			})
-				.value();
+			}).value();
 
 			vm.teamStandings = _.chain(data.standings)
 				.pluck('divisionStandings')
 				.flatten()
 				.find({ 'teamId': vm.teamId })
 				.value();
-
+				
 			var followedTeam = myTeamsService.isFollowingTeam(team.id);
-			
 			if(followedTeam){
 				vm.following = true;
-			} else{
+			} else {
 				vm.following = false;
 			}
+			
 
 			vm.toggleFollow = function () {
 				if (vm.following) {
@@ -61,17 +61,13 @@
 
 					confirmPopup.then(function (res) {
 						if (res) {
-							vm.following = !vm.following;
+							vm.following = false;
+							myTeamsService.unfollowTeam(vm.teamId);
 						}
 					});
 				} else {
-					vm.following = !vm.following;
-				}
-				
-				if(vm.following){
+					vm.following = true;
 					myTeamsService.followTeam(team);
-				} else {
-					myTeamsService.unfollowTeam(team.teamId);
 				}
 			};
 

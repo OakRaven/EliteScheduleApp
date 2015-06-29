@@ -3,19 +3,21 @@
 (function(){
 	'use strict';
 	
-	angular.module('eliteApp').factory('myTeamsService', ['CacheFactory', myTeamsService]);
+	angular.module('eliteApp').factory('myTeamsService', ['CacheFactory', 'eliteApi', myTeamsService]);
 	
-	function myTeamsService(CacheFactory){
+	function myTeamsService(CacheFactory, eliteApi){
 		var self = this;
 		
 		self.myTeamsCache = CacheFactory.get('myTeamsCache');
 		
 		function followTeam(team) {
+			team.leagueId = eliteApi.getLeagueId();
 			console.log('Following', team);
 			self.myTeamsCache.put(team.id, team);
 		}
 		
 		function unfollowTeam(teamId) {
+			console.log('Unfollowing', teamId);
 			self.myTeamsCache.remove(teamId.toString());
 		}
 		

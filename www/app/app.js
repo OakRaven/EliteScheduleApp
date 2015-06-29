@@ -13,10 +13,10 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 			StatusBar.styleDefault();
 		}
 
-		CacheFactory('leagueDataCache', { storage: 'localStorage', maxAge: 15 * 60 * 1000, deleteOnExpire: 'aggressive' });
-		CacheFactory('leaguesCache', { storage: 'localStorage', maxAge: 15 * 60 * 1000, deleteOnExpire: 'aggressive' });
-		CacheFactory('myTeamsCache', { storage: 'localStorage' });
-		CacheFactory('staticCache', { storage: 'localStorage' });
+		CacheFactory('leagueDataCache', { storageMode: 'localStorage', maxAge: 15 * 60 * 1000, deleteOnExpire: 'aggressive' });
+		CacheFactory('leaguesCache', { storageMode: 'localStorage', maxAge: 15 * 60 * 1000, deleteOnExpire: 'aggressive' });
+		CacheFactory('myTeamsCache', { storageMode: 'localStorage' });
+		CacheFactory('staticCache', { storageMode: 'localStorage' });
 	});
 })
 
@@ -78,6 +78,7 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 
 		.state('app.game', {
 		url: '/game/:id',
+		cache: false,
 		views: {
 			'mainContent': {
 				templateUrl: 'app/game/game.html'
@@ -87,6 +88,7 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 
 		.state('app.standings', {
 		url: '/standings',
+		cache: false,
 		views: {
 			'mainContent': {
 				templateUrl: 'app/standings/standings.html'
@@ -96,6 +98,7 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 
 		.state('app.locations', {
 		url: '/locations',
+		cache: false,
 		views: {
 			'mainContent': {
 				templateUrl: 'app/locations/locations.html'
@@ -105,6 +108,7 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 
 		.state('app.rules', {
 		url: '/rules',
+		cache: false,
 		views: {
 			'mainContent': {
 				templateUrl: 'app/rules/rules.html'

@@ -110,7 +110,8 @@
 		return {
 			getLeagues: getLeagues,
 			getLeagueData: getLeagueData,
-			setLeagueId: setLeagueId
+			setLeagueId: setLeagueId,
+			getLeagueId: getLeagueId
 		};
 	};
 
