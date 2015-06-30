@@ -3,7 +3,8 @@
 
 angular.module('eliteApp', ['ionic', 'angular-cache'])
 
-	.run(function ($ionicPlatform, CacheFactory) {
+	.run(function ($ionicPlatform, $ionicConfig, CacheFactory) {
+    
 	$ionicPlatform.ready(function () {
 		if (window.cordova && window.cordova.plugins.Keyboard) {
 			cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -20,8 +21,10 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 	});
 })
 
-	.config(function ($stateProvider, $urlRouterProvider, CacheFactoryProvider) {
+	.config(function ($ionicConfigProvider, $stateProvider, $urlRouterProvider, CacheFactoryProvider) {
 
+  $ionicConfigProvider.views.maxCache(0);
+    
 	angular.extend(CacheFactoryProvider.defaults, { maxAge: 15 * 60 * 1000 });
 
 	$stateProvider
@@ -42,7 +45,6 @@ angular.module('eliteApp', ['ionic', 'angular-cache'])
 
 		.state('home.myteams', {
 		url: '/myteams',
-		cahce: false,
 		views: {
 			'tab-myteams': {
 				templateUrl: 'app/home/myteams.html'

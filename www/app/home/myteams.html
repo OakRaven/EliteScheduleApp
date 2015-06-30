@@ -2,7 +2,8 @@
 	<h2 class="title">My Teams</h2>
 </div>
 
-<ion-view ng-controller="MyTeamsCtrl as vm">
+<ion-view ng-controller="MyTeamsCtrl as vm"
+  before-enter="vm.loadTeams()">
 	<ion-content class="has-header has-subheader">
 		
 		<div class="card" ng-hide="vm.myTeams">
@@ -13,7 +14,7 @@
 				<p>You are not currently following any teams.</p>
 				<p>First, select a league, then you can follow teams
 					from their team page.
-				</p>
+				</p>  
 				<a href="#/home/leagues" class="button button-positive button-full">
 				Select League</a>
 			</div>
@@ -38,6 +39,5 @@
 				<a href="#/home/leagues" class="button button-positive button-full">Select League</a>
 			</div>
 		</div>
-		
 	</ion-content>
 </ion-view>
