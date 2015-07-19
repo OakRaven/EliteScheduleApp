@@ -10,33 +10,33 @@
 
 		self.leaguesCache = CacheFactory.get('leaguesCache');
 		self.leagueDataCache = CacheFactory.get('leagueDataCache');
-		
+
 		self.leaguesCache.setOptions({
-			onExpire: function(key, value){
+			onExpire: function (key, value) {
 				getLeagues()
-					.then(function(){
+					.then(function () {
 						console.log('Leagues Cache was automatically refreshed.', new Date());
-					}, function(){
+					}, function () {
 						console.log('Error getting data.  Putting expired item back in the cache.', new Date());
 						self.leaguesCache.put(key, value);
 					});
 			}
 		});
-		
+
 		self.leagueDataCache.setOptions({
-			onExpire: function(key, value){
+			onExpire: function (key, value) {
 				getLeagues()
-					.then(function(){
+					.then(function () {
 						console.log('League Data Cache was automatically refreshed.', new Date());
-					}, function(){
+					}, function () {
 						console.log('Error getting data.  Putting expired item back in the cache.', new Date());
 						self.leagueDataCache.put(key, value);
 					});
 			}
 		});
-		
+
 		self.staticCache = CacheFactory.get('staticCache');
-		
+
 		function getLeagues() {
 			var deferred = $q.defer(),
 				cacheKey = 'leagues',
@@ -51,7 +51,7 @@
 					{ id: 2, name: '7th Grade MS JV Saturday 2013-14 League' },
 					{ id: 2005, name: 'March Madness Tournament 2014' },
 					{ id: 2008, name: '7th Grade HYBA Spring 2014' },
-					{ id: 2009, name: 'Spring Fling Tournament 2014' },					
+					{ id: 2009, name: 'Spring Fling Tournament 2014' },
 					{ id: 2010, name: 'Metro Classic 2014' },
 					{ id: 2011, name: "Summer Showdown 2014" },
 					{ id: 2012, name: '8th Grade HYBA Fall 2014' },
@@ -71,10 +71,16 @@
 			return deferred.promise;
 		}
 
-		function getLeagueData() {
+		function getLeagueData(forceRefresh) {
+			if (typeof forceRefresh === "undefined") { forceRefresh = false; }
+
 			var deferred = $q.defer(),
 				cacheKey = 'leagueData-' + getLeagueId(),
+				leagueData = null;
+				
+			if (!forceRefresh) {
 				leagueData = self.leagueDataCache.get(cacheKey);
+			}
 
 			if (leagueData) {
 				console.log('Loaded league data from cache');
@@ -84,16 +90,16 @@
 
 				$http.get('http://elite-schedule.net/api/leaguedata/' + getLeagueId())
 					.success(function (data, status) {
-					self.leagueDataCache.put(cacheKey, data);
-					$ionicLoading.hide();
-					console.log('Received schedule data via HTTP.', data, status);
-					deferred.resolve(data);
-				})
+						self.leagueDataCache.put(cacheKey, data);
+						$ionicLoading.hide();
+						console.log('Received schedule data via HTTP.', data, status);
+						deferred.resolve(data);
+					})
 					.error(function () {
-					$ionicLoading.hide();
-					console.log('Error while making HTTP call.');
-					deferred.reject();
-				});
+						$ionicLoading.hide();
+						console.log('Error while making HTTP call.');
+						deferred.reject();
+					});
 			}
 
 			return deferred.promise;
@@ -102,7 +108,7 @@
 		function setLeagueId(leagueId) {
 			self.staticCache.put('currentLeagueId', leagueId);
 		}
-		
+
 		function getLeagueId() {
 			return self.staticCache.get('currentLeagueId');
 		}
