@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "lodash": "~3.9.3",
-    "angular-cache": "~4.2.0"
+    "angular-cache": "~4.2.0",
+    "angular-google-maps": "~2.1.5"
   }
 }
